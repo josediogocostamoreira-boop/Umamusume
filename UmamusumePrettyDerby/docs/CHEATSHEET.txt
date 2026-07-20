@@ -1,0 +1,515 @@
+CHEATSHEET - UMAMUSUME PRETTY DERBY
+===================================
+
+Objetivo deste ficheiro
+-----------------------
+Este resumo explica:
+1. Como o projeto esta organizado.
+2. O que cada ficheiro faz.
+3. Que partes de Python aparecem aqui e para que servem.
+4. Como adicionar novas funcoes sem baralhar a estrutura.
+
+
+1. VISÃO GERAL DO FLUXO
+-----------------------
+O jogo arranca em:
+UmamusumePrettyDerby.py
+
+Fluxo principal:
+1. `main()` chama `mostrar_menu_inicial()`.
+2. Depois cria `jogo = Jogo()`.
+3. A seguir chama `jogo.iniciarJogo()`.
+4. A classe `Jogo` controla o resto da aplicacao.
+5. O `Jogo` mostra menus, recebe escolhas, manda treinar, descansar ou correr.
+6. A `Corredora` guarda os atributos e aplica as regras de treino/corrida.
+7. A `Corrida` calcula o resultado de cada prova.
+8. A `InterfaceJogo` so mostra ecras e pede input.
+9. `DadosCarreira` cria personagens e calendarios.
+10. `Pontuacao` calcula o score e rank final.
+11. `Recursos` junta cores, som, pausas e funcoes reutilizaveis.
+
+
+2. O QUE CADA FICHEIRO FAZ
+--------------------------
+UmamusumePrettyDerby.py
+- E o ponto de entrada.
+- Tem a funcao `main()`.
+- E o sitio certo para meter configuracao inicial antes do jogo comecar.
+
+Jogo.py
+- E o cerebro do programa.
+- Controla o loop principal.
+- Liga interface, corredora, corridas e pontuacao.
+- Se quiseres adicionar uma nova opcao do menu principal, normalmente mexes aqui.
+
+Corredora.py
+- Guarda o estado da personagem.
+- Tem stats: speed, stamina, power, guts, wit.
+- Tambem guarda energia, fans, vitorias, mood e historico.
+- Se a nova funcionalidade altera atributos da personagem, mexes aqui.
+
+Corrida.py
+- Define cada corrida.
+- Calcula pontuacao, posicao, fans e resultado.
+- Se quiseres novas regras de corrida, mexes aqui.
+
+DadosCarreira.py
+- Cria as corredoras iniciais.
+- Cria os planos de carreira e respetivas corridas.
+- Se quiseres mais personagens ou mais carreiras, mexes aqui.
+
+InterfaceJogo.py
+- Mostra menus, listas, resultados e pede escolhas ao utilizador.
+- Deve conter interface, nao regras pesadas.
+- Se adicionares nova opcao visual ou novo menu, mexes aqui.
+
+Introducao.py
+- Mostra a historia inicial.
+- Serve para prologo, tutorial e narrativa.
+
+Pontuacao.py
+- Calcula score final.
+- Converte score para rank de G a S.
+
+Recursos.py
+- Tem helpers reutilizaveis.
+- Cores ANSI.
+- Audio e musica.
+- Limpar consola, pausas, imprimir ASCII, etc.
+
+
+3. CONCEITOS DE PYTHON USADOS NESTE PROJETO
+-------------------------------------------
+
+3.1 Imports
+Exemplo:
+`from Jogo import Jogo`
+
+Isto importa a classe `Jogo` de outro ficheiro.
+
+Tambem aparece:
+`try: ... except ModuleNotFoundError: ...`
+
+Isto serve para o codigo funcionar quer como pacote quer como ficheiros locais.
+
+
+3.2 Funcoes
+Exemplo:
+`def main():`
+
+Uma funcao agrupa instrucoes com um nome.
+Podes chamá-la mais tarde com:
+`main()`
+
+Quando adicionar uma funcao nova, tens de pensar:
+- Onde deve viver?
+- Quem a vai chamar?
+- O que deve devolver com `return`?
+
+
+3.3 Classes
+Exemplo:
+`class Jogo:`
+`class Corredora:`
+`class Corrida:`
+
+Uma classe e um molde para criar objetos.
+
+Exemplo:
+`jogo = Jogo()`
+
+Aqui foi criado um objeto da classe `Jogo`.
+
+
+3.4 Metodo `__init__`
+Exemplo:
+`def __init__(self):`
+
+E o construtor da classe.
+Corre quando fazes `Jogo()` ou `Corredora(...)`.
+Serve para preparar os atributos iniciais.
+
+
+3.5 `self`
+Dentro de metodos de classe aparece sempre `self`.
+
+Exemplo:
+`self.__semanaAtual = 1`
+
+`self` refere-se ao proprio objeto atual.
+
+
+3.6 Atributos privados com `__`
+Exemplo:
+`self.__energia`
+`self.__speed`
+
+O projeto usa `__nome` para indicar que o atributo nao deve ser mexido diretamente fora da classe.
+Por isso existem getters e setters.
+
+
+3.7 Getters e setters
+Exemplo:
+`getEnergia()`
+`setEnergia(energia)`
+
+Servem para ler ou alterar dados com controlo.
+Isto ajuda a validar limites, como energia maxima ou stats maximos.
+
+
+3.8 Condicoes
+Exemplo:
+`if opcao == "1":`
+`elif opcao == "2":`
+`else:`
+
+Isto escolhe caminhos diferentes conforme o valor.
+No projeto e muito usado para menus.
+
+
+3.9 Ciclos
+Exemplo `while`:
+`while self.__terminado is False:`
+
+Repete enquanto a condicao for verdadeira.
+Este e o loop principal do jogo.
+
+Exemplo `for`:
+`for corrida in self.__corridas:`
+
+Percorre todos os elementos de uma lista.
+
+
+3.10 Listas
+Exemplo:
+`self.__corridas = []`
+
+Guardam varios valores pela ordem.
+Neste projeto guardam corridas, mensagens e opcoes.
+
+
+3.11 Dicionarios
+Exemplo em `Corredora.treinar()`:
+`ganhos = {"speed": 70, "wit": 10}`
+
+Um dicionario guarda pares chave/valor.
+Aqui serve para mapear quanto cada treino aumenta.
+
+
+3.12 Tuplos
+Exemplo:
+`("Velocista", "descricao", "vantagem")`
+
+O projeto usa tuplos para guardar grupos fixos de dados.
+
+
+3.13 `return`
+Exemplo:
+`return True, mensagens`
+
+Uma funcao pode devolver valores ao sitio que a chamou.
+No projeto, muitos metodos devolvem:
+- sucesso/falha
+- mensagens de feedback
+- resultados calculados
+
+
+3.14 Metodos estaticos
+Exemplo em `Recursos`:
+`@staticmethod`
+
+Isto permite chamar:
+`Recursos.limparConsola()`
+
+sem precisares de criar `recursos = Recursos()`.
+
+
+3.15 Guard principal
+Exemplo:
+`if __name__ == "__main__":`
+
+Isto garante que `main()` so arranca quando este ficheiro e executado diretamente.
+
+
+4. COMO O CODIGO ESTA SEPARADO
+------------------------------
+O projeto esta razoavelmente dividido assim:
+
+1. Entrada
+- UmamusumePrettyDerby.py
+
+2. Logica principal
+- Jogo.py
+
+3. Regras de dominio
+- Corredora.py
+- Corrida.py
+
+4. Dados fixos
+- DadosCarreira.py
+
+5. Interface
+- InterfaceJogo.py
+- Introducao.py
+
+6. Utilitarios
+- Recursos.py
+
+7. Score final
+- Pontuacao.py
+
+Regra pratica importante:
+- Se so mostra texto ou pede input, vai para InterfaceJogo.py.
+- Se altera estado da corredora, vai para Corredora.py.
+- Se altera a semana, menus ou fluxo geral, vai para Jogo.py.
+- Se altera formula da corrida, vai para Corrida.py.
+- Se sao dados fixos de personagens/carreiras, vai para DadosCarreira.py.
+
+
+5. COMO ADICIONAR UMA NOVA FUNCAO
+---------------------------------
+Antes de criar a funcao, responde a estas 3 perguntas:
+1. E interface, regra ou dado?
+2. Quem vai chamar essa funcao?
+3. Precisa de devolver algo?
+
+Padrao seguro:
+1. Criar a funcao/metodo.
+2. Chamar essa funcao a partir do sitio certo.
+3. Testar o fluxo completo.
+
+
+6. EXEMPLO 1 - ADICIONAR NOVA OPCAO AO MENU PRINCIPAL
+-----------------------------------------------------
+Supondo que queres adicionar a opcao `9 - Loja`.
+
+Passo 1: Mostrar a opcao no menu
+- Ficheiro: InterfaceJogo.py
+- Funcao: `mostrar_menu_principal(...)`
+- Adiciona uma linha:
+`print("9 - Loja")`
+
+Passo 2: Criar o metodo que executa a funcionalidade
+- Ficheiro: Jogo.py
+- Dentro da classe `Jogo`, cria por exemplo:
+
+def loja(self):
+    Recursos.imprimirSecao("Loja")
+    Recursos.imprimirInfo("Sistema de loja ainda simples.")
+    Recursos.esperarEnter()
+
+Passo 3: Ligar a opcao ao metodo
+- Ainda em `Jogo.py`, dentro de `processarOpcao(self, opcao)`:
+
+elif opcao == "9":
+    self.loja()
+
+Se a loja gastar a semana, no fim chama:
+`self.resolverFimDaSemana()`
+
+Se a loja nao gastar a semana, nao chames isso.
+
+
+7. EXEMPLO 2 - ADICIONAR NOVO TIPO DE TREINO
+--------------------------------------------
+Supondo que queres `6 - Tactica`.
+
+Passo 1: Mostrar a opcao no menu de treino
+- Ficheiro: InterfaceJogo.py
+- Funcao: `pedir_tipo_treino(corredora)`
+- Adiciona uma nova linha no menu.
+- Faz o mapeamento, por exemplo:
+`elif escolha == "6": return "tatica"`
+
+Passo 2: Ensinar a corredora a processar o novo treino
+- Ficheiro: Corredora.py
+- Funcao: `treinar(self, tipoTreino)`
+- Adiciona mais um bloco:
+
+elif tipoTreino == "tatica":
+    ganhos = {"wit": 50, "stamina": 20, "speed": 10}
+    nomeTreino = "Tactica"
+
+Passo 3: Garantir que a opcao Voltar nao ficou partida
+- Se o `Voltar` era 6, passa a 7.
+
+Muito importante:
+- O texto do menu e o `if/elif` de leitura têm de bater certo.
+- O valor devolvido (`"tatica"`) tem de bater certo com o nome usado em `Corredora.treinar()`.
+
+
+8. EXEMPLO 3 - ADICIONAR UMA NOVA CORRIDA OU NOVO PLANO
+-------------------------------------------------------
+Se quiseres mais corridas ou mais carreira:
+
+Ficheiro principal:
+DadosCarreira.py
+
+Para nova corredora inicial:
+- Adiciona mais um `Corredora(...)` na lista de `criar_corredoras_iniciais()`.
+
+Para novo plano:
+1. Criar uma funcao nova, por exemplo:
+`def criar_carreira_endurance():`
+2. Devolver uma lista de `Corrida(...)`.
+3. Registar a nova opcao em `obter_carreira_por_opcao(opcao)`.
+4. Mostrar a nova opcao em `pedir_opcao_plano_carreira()` dentro de InterfaceJogo.py.
+
+Se criares uma opcao no backend e te esqueceres do menu, o jogador nunca a vai ver.
+Se criares a opcao no menu e te esqueceres do backend, vai dar opcao invalida.
+
+
+9. EXEMPLO 4 - ADICIONAR NOVO ATRIBUTO A CORREDORA
+--------------------------------------------------
+Supondo que queres adicionar `tecnica`.
+
+Ficheiro: Corredora.py
+
+Passos:
+1. No `__init__`, adicionar `self.__tecnica`.
+2. Criar `getTecnica()` e `setTecnica()`.
+3. Mostrar esse valor em `mostrarEstado()` se quiseres ver no ecran.
+4. Se afetar treino, mexe em `treinar()`.
+5. Se afetar corridas, mexe em `Corrida.calcularPontuacao()`.
+
+Exemplo de risco comum:
+- Criar o atributo mas esquecer-se de o integrar na logica.
+Nesse caso ele existe, mas nao influencia nada.
+
+
+10. EXEMPLO 5 - ADICIONAR NOVA REGRA DE CORRIDA
+-----------------------------------------------
+Se quiseres chuva, bonus de estilo ou penalizacao por cansaco:
+
+Ficheiro principal:
+Corrida.py
+
+Metodo principal:
+`calcularPontuacao(self, corredora)`
+
+Exemplo mental do fluxo atual:
+1. Soma stats com pesos.
+2. Aplica multiplicador de mood.
+3. Adiciona bonus de energia.
+4. Adiciona variacao aleatoria.
+5. Devolve pontuacao final.
+
+Se quiseres nova regra, e aqui que normalmente entra.
+
+
+11. COMO SABER ONDE COLOCAR UMA NOVA FUNCAO
+-------------------------------------------
+Pergunta rapida:
+
+Se a funcao...
+- mostra texto -> InterfaceJogo.py ou Introducao.py
+- controla o fluxo -> Jogo.py
+- altera a atleta -> Corredora.py
+- calcula resultado de prova -> Corrida.py
+- cria dados fixos -> DadosCarreira.py
+- calcula score/rank -> Pontuacao.py
+- serve de utilitario generico -> Recursos.py
+
+
+12. PADRAO DE RACIOCINIO PARA MEXER NESTE PROJETO
+-------------------------------------------------
+Quando fores adicionar alguma coisa, segue esta ordem:
+
+1. Descobrir onde o utilizador vai clicar/escolher.
+2. Descobrir que funcao recebe essa escolha.
+3. Descobrir que objeto tem a responsabilidade real pela regra.
+4. Fazer a alteracao minima nesse ponto.
+5. Ligar tudo com uma chamada simples.
+
+Exemplo:
+Nova opcao no menu -> InterfaceJogo mostra a opcao -> Jogo.processarOpcao recebe -> Jogo chama um metodo -> Corredora/Corrida faz a regra.
+
+
+13. ERROS COMUNS AO ADICIONAR FUNCOES
+-------------------------------------
+1. Criar a funcao mas nunca a chamar.
+2. Criar a opcao no menu mas esquecer o `elif` correspondente.
+3. Usar nomes diferentes entre menu e logica.
+4. Alterar interface quando a regra devia estar em Corredora ou Corrida.
+5. Mexer diretamente em atributos quando ja existe setter.
+6. Esquecer `self` dentro de metodos da classe.
+7. Esquecer `return` quando a funcao precisa devolver algo.
+8. Adicionar dados novos e nao mostrar nem usar em lado nenhum.
+
+
+14. MINI GUIA DE LEITURA DE CODIGO PYTHON DESTE PROJETO
+-------------------------------------------------------
+Quando vires isto:
+
+`def nome(...):`
+- E uma funcao ou metodo.
+
+`class Nome:`
+- E uma classe.
+
+`self.xxx`
+- E um atributo/metodo do objeto atual.
+
+`if / elif / else`
+- Decide caminhos.
+
+`for`
+- Percorre elementos.
+
+`while`
+- Repete ate a condicao mudar.
+
+`return`
+- Devolve o resultado.
+
+`@staticmethod`
+- Metodo utilitario chamado pela classe, sem criar objeto.
+
+`try / except`
+- Tenta executar e trata falhas.
+
+
+15. RESUMO MUITO RAPIDO
+-----------------------
+Se quiseres adicionar uma funcionalidade nova, quase sempre vais mexer em dois sitios:
+
+1. Onde a opcao aparece ao jogador.
+2. Onde a regra dessa opcao e executada.
+
+Na pratica:
+- menu e texto -> InterfaceJogo.py
+- logica principal -> Jogo.py
+- stats e estado -> Corredora.py
+- resultados de prova -> Corrida.py
+
+
+16. EXEMPLO DE ESQUELETO PARA FUNCAO NOVA
+-----------------------------------------
+Exemplo dentro de `Jogo.py`:
+
+def eventoEspecial(self):
+    Recursos.imprimirSecao("Evento Especial")
+    Recursos.imprimirInfo("A corredora participou num evento motivacional.")
+    mensagens = self.__corredora.recriar()
+
+    for mensagem in mensagens:
+        print(mensagem)
+
+    self.resolverFimDaSemana()
+
+Para ligar:
+- Mostra a opcao no menu principal.
+- Adiciona `elif opcao == "9": self.eventoEspecial()` em `processarOpcao()`.
+
+
+17. CONCLUSAO
+-------------
+O projeto segue uma ideia simples:
+- `Jogo` manda no fluxo.
+- `InterfaceJogo` fala com o utilizador.
+- `Corredora` guarda e altera o estado.
+- `Corrida` calcula desempenho.
+- `DadosCarreira` fornece conteudo fixo.
+- `Recursos` evita repeticao.
+
+Se mantiveres esta separacao, adicionar funcoes novas fica muito mais facil.
